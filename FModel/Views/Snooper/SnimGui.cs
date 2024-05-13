@@ -217,7 +217,12 @@ public class SnimGui
         {
             Layout("Animate With Rotation Only");ImGui.PushID(1);
             ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
-            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(2);
+            ImGui.PopID();Layout("Animation Speed Multiplier");ImGui.PushID(2);
+            var x = (int) s.Renderer.Multiplier;
+            ImGui.Combo("speed_multiplier", ref x,
+                "x1\0x2\0x4\0x8\0");
+            s.Renderer.Multiplier = (TimeMultiplier) x;
+            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(3);
             var c = (int) s.Renderer.Color;
             ImGui.Combo("vertex_colors", ref c,
                 "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");

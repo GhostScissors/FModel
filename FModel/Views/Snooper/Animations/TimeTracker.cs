@@ -26,10 +26,10 @@ public class TimeTracker : IDisposable
         Reset();
     }
 
-    public void Update(float deltaSeconds)
+    public void Update(float deltaSeconds, float timeMultiplier)
     {
         if (IsPaused || IsActive) return;
-        ElapsedTime += deltaSeconds;
+        ElapsedTime += deltaSeconds * timeMultiplier;
         if (ElapsedTime >= MaxElapsedTime) Reset(false);
     }
 

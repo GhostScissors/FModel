@@ -38,6 +38,14 @@ public enum VertexColor
     TextureCoordinates
 }
 
+public enum TimeMultiplier
+{
+    x1,
+    x2,
+    x4,
+    x8
+}
+
 public class Renderer : IDisposable
 {
     private readonly Skybox _skybox;
@@ -55,6 +63,7 @@ public class Renderer : IDisposable
     public bool AnimateWithRotationOnly;
     public bool IsSkeletonTreeOpen;
     public VertexColor Color;
+    public TimeMultiplier Multiplier;
 
     public Camera CameraOp { get; }
     public PickingTexture Picking { get; }
@@ -73,6 +82,7 @@ public class Renderer : IDisposable
         ShowGrid = UserSettings.Default.ShowGrid;
         AnimateWithRotationOnly = UserSettings.Default.AnimateWithRotationOnly;
         Color = VertexColor.Default;
+        Multiplier = TimeMultiplier.x1;
     }
 
     public void Load(CancellationToken cancellationToken, UObject export)
@@ -290,7 +300,16 @@ public class Renderer : IDisposable
 
     public void Update(Snooper wnd, float deltaSeconds)
     {
-        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
+        float multiplier = Multiplier switch
+        {
+            TimeMultiplier.x1 => 1,
+            TimeMultiplier.x2 => 2,
+            TimeMultiplier.x4 => 4,
+            TimeMultiplier.x8 => 8,
+            _ => 1
+        };
+
+        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds, multiplier);
         foreach (var animation in Options.Animations)
         {
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
@@ -300,7 +319,6 @@ public class Renderer : IDisposable
                 skeletalModel.Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
             }
         }
-
         {
             foreach (var model in Options.Models.Values)
             {
