@@ -69,7 +69,7 @@ public class SnimGui
     private bool _tiOpen;
     private bool _viewportFocus;
 
-    private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
+    private readonly Vector4 _accentColo = new (0.125f, 0.42f, 0.831f, 1.0f);
     private readonly Vector4 _alertColor = new (0.831f, 0.573f, 0.125f, 1.0f);
     private readonly Vector4 _errorColor = new (0.761f, 0.169f, 0.169f, 1.0f);
 
