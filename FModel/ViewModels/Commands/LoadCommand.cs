@@ -183,7 +183,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     var version = archive.Read<EBackupVersion>();
 
                     if (version == EBackupVersion.BeforeVersioningWasAdded)
-                        archive.Position += 21;
+                        archive.Position += 28;
 
                     if (version == EBackupVersion.Versioning)
                         archive.Position += 9;
@@ -215,7 +215,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     var version = archive.Read<EBackupVersion>();
 
                     if (version == EBackupVersion.BeforeVersioningWasAdded)
-                        archive.Position += 8;
+                        archive.Position += 15;
 
                     var uncompressedSize = archive.Read<long>();
                     var isEncrypted = archive.ReadFlag();
