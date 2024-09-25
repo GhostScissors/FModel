@@ -74,7 +74,7 @@ public class BackupManagerViewModel : ViewModel
                     entry.Path.EndsWith(".ubulk") || entry.Path.EndsWith(".uptnl"))
                     continue;
 
-                writer.Write((long) EBackupVersion.Latest);
+                writer.Write((byte) EBackupVersion.Latest);
                 writer.Write(entry.Size);
                 writer.Write(entry.IsEncrypted);
                 writer.Write($"/{entry.Path.ToLower()}");
@@ -114,7 +114,7 @@ public class BackupManagerViewModel : ViewModel
     }
 }
 
-public enum EBackupVersion : long
+public enum EBackupVersion : byte
 {
     /* Before custom version was added */
     BeforeVersioningWasAdded = 0,
