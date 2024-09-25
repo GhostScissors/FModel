@@ -66,7 +66,7 @@ public class BackupManagerViewModel : ViewModel
             var fullPath = Path.Combine(backupFolder, fileName);
 
             using var fileStream = new FileStream(fullPath, FileMode.Create);
-            using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
+            using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L03_HC);
             using var writer = new BinaryWriter(compressedStream);
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
             {
@@ -74,13 +74,10 @@ public class BackupManagerViewModel : ViewModel
                     entry.Path.EndsWith(".ubulk") || entry.Path.EndsWith(".uptnl"))
                     continue;
 
-                writer.Write((long) 0);
-                writer.Write((long) 0);
+                writer.Write((long) EBackupVersion.Latest);
                 writer.Write(entry.Size);
                 writer.Write(entry.IsEncrypted);
-                writer.Write(0);
                 writer.Write($"/{entry.Path.ToLower()}");
-                writer.Write(0);
             }
 
             SaveCheck(fullPath, fileName, "created", "create");
@@ -115,4 +112,16 @@ public class BackupManagerViewModel : ViewModel
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not {type2} '{fileName}'", Constants.WHITE, true));
         }
     }
+}
+
+public enum EBackupVersion : long
+{
+    /* Before custom version was added */
+    BeforeVersioningWasAdded = 0,
+
+    /* Added versioning to help with backwards compatibility  */
+    Versioning,
+
+    LatestPlusOne,
+    Latest = LatestPlusOne - 1
 }
