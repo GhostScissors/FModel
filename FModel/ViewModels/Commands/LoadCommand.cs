@@ -174,14 +174,24 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         {
             case ELoadingMode.AllButNew:
             {
+
                 var paths = new Dictionary<string, int>();
                 while (archive.Position < archive.Length)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    archive.Position += 29;
+                    var version = archive.Read<EBackupVersion>();
+
+                    if (version == EBackupVersion.BeforeVersioningWasAdded)
+                        archive.Position += 28;
+
+                    if (version == EBackupVersion.Versioning)
+                        archive.Position += 9;
+
                     paths[archive.ReadString().ToLower()[1..]] = 0;
-                    archive.Position += 4;
+
+                    if (version == EBackupVersion.BeforeVersioningWasAdded)
+                        archive.Position += 4;
                 }
 
                 foreach (var (key, value) in _applicationView.CUE4Parse.Provider.Files)
@@ -202,12 +212,21 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    archive.Position += 16;
+                    var version = archive.Read<EBackupVersion>();
+
+                    if (version == EBackupVersion.BeforeVersioningWasAdded)
+                        archive.Position += 15;
+
                     var uncompressedSize = archive.Read<long>();
                     var isEncrypted = archive.ReadFlag();
-                    archive.Position += 4;
+
+                    if (version == EBackupVersion.BeforeVersioningWasAdded)
+                        archive.Position += 4;
+
                     var fullPath = archive.ReadString().ToLower()[1..];
-                    archive.Position += 4;
+
+                    if (version == EBackupVersion.BeforeVersioningWasAdded)
+                        archive.Position += 4;
 
                     if (fullPath.EndsWith(".uexp") || fullPath.EndsWith(".ubulk") || fullPath.EndsWith(".uptnl") ||
                         !_applicationView.CUE4Parse.Provider.Files.TryGetValue(fullPath, out var asset) || asset is not VfsEntry entry ||
